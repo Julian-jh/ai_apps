@@ -1,7 +1,8 @@
+import axios from 'axios';
+import { useRef, useState, type KeyboardEvent } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { FaArrowUp } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
-import { useRef, useState, type KeyboardEvent } from 'react';
-import axios from 'axios';
 
 type FormData = {
    prompt: string;
@@ -22,7 +23,7 @@ const Chatbox = () => {
    const { register, handleSubmit, reset, formState } = useForm<FormData>(); // Initialize react-hook-form
 
    const onSubmit = async ({ prompt }: FormData) => {
-      setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
+      setMessages((prev) => [...prev, { content: prompt, role: 'user' }]); // Add user's message to state
       reset(); // Clear the textarea after submission
       const { data } = await axios.post<chatResponse>('/api/chat', {
          // Send POST request to the server
@@ -48,17 +49,17 @@ const Chatbox = () => {
          <div className="flex flex-col gap-3 mb-5">
             {messages.map((messages, index) => (
                <p
-                  key={index}
+                  key={index} // Use index as key since messages can be identical
                   className={`px-3 
                     py-1
                     rounded-lg 
                     ${
                        messages.role === 'user'
-                          ? 'bg-blue-600 text-white self-end'
+                          ? 'bg-blue-600 text-white self-end' // If the message is from the user
                           : 'bg-gray-100 text-black self-start'
                     }`}
                >
-                  {messages.content}
+                  <ReactMarkdown>{messages.content}</ReactMarkdown>
                </p>
             ))}
          </div>
