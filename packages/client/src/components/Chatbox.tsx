@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import React, { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { FaArrowUp } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
@@ -51,12 +51,23 @@ const Chatbox = () => {
       }
    };
 
+   const reformatCopyMessage = (
+      e: React.ClipboardEvent<HTMLParagraphElement>
+   ) => {
+      const selection = window.getSelection()?.toString().trim();
+      if (selection) {
+         e.preventDefault();
+         e.clipboardData.setData('text/plain', selection);
+      }
+   };
+
    return (
       <div>
          <div className="flex flex-col gap-3 mb-5">
             {messages.map((messages, index) => (
                <p
                   key={index} // Use index as key since messages can be identical
+                  onCopy={reformatCopyMessage}
                   className={`px-3 
                     py-1
                     rounded-lg 
