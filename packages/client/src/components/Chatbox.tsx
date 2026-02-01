@@ -20,10 +20,12 @@ type Message = {
 const Chatbox = () => {
    const [messages, setMessages] = useState<Message[]>([]); // State to hold chat messages
    const conversationId = useRef(crypto.randomUUID()); // Generate a unique conversation ID
+   const [isBotTyping, setIsBotTyping] = useState(false); // State to track if the bot is typing
    const { register, handleSubmit, reset, formState } = useForm<FormData>(); // Initialize react-hook-form
 
    const onSubmit = async ({ prompt }: FormData) => {
       setMessages((prev) => [...prev, { content: prompt, role: 'user' }]); // Add user's message to state
+      setIsBotTyping(true); // Set bot typing state to true
       reset(); // Clear the textarea after submission
       const { data } = await axios.post<chatResponse>('/api/chat', {
          // Send POST request to the server
@@ -34,6 +36,7 @@ const Chatbox = () => {
          ...prev,
          { content: data.message, role: 'assistant' },
       ]);
+      setIsBotTyping(false); // Set bot typing state to false
       console.log(data); // Log the response from the server
    };
 
@@ -62,6 +65,13 @@ const Chatbox = () => {
                   <ReactMarkdown>{messages.content}</ReactMarkdown>
                </p>
             ))}
+            {isBotTyping && (
+               <div className="flex gap-1 px-3 py-3 bg-gray-400 rounded-xl self-start">
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.2s]"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.4s]"></div>
+               </div>
+            )}
          </div>
 
          <form
