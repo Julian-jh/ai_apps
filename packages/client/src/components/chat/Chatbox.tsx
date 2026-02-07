@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { FaArrowUp } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
+import TypingIndicator from './TypingIndicator';
 
 type FormData = {
    prompt: string;
@@ -90,13 +91,7 @@ const Chatbox = () => {
                   <ReactMarkdown>{messages.content}</ReactMarkdown>
                </p>
             ))}
-            {isBotTyping && (
-               <div className="flex gap-1 px-3 py-3 bg-gray-400 rounded-xl self-start">
-                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse"></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.2s]"></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.4s]"></div>
-               </div>
-            )}
+            {isBotTyping && <TypingIndicator />}
             {error && <p className="text-red-700">{error}</p>}
          </div>
 

@@ -1,4 +1,4 @@
-import Chatbox from './components/Chatbox';
+import Chatbox from './components/chat/Chatbox';
 
 function App() {
    return (
