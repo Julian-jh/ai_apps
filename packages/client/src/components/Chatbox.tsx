@@ -21,6 +21,7 @@ const Chatbox = () => {
    const [messages, setMessages] = useState<Message[]>([]); // State to hold chat messages
    const conversationId = useRef(crypto.randomUUID()); // Generate a unique conversation ID
    const formRef = useRef<HTMLFormElement | null>(null); // Ref for the form element
+   const [error, setError] = useState('');
    const [isBotTyping, setIsBotTyping] = useState(false); // State to track if the bot is typing
    const { register, handleSubmit, reset, formState } = useForm<FormData>(); // Initialize react-hook-form
    useEffect(() => {
@@ -28,20 +29,29 @@ const Chatbox = () => {
    }, [messages]); // Dependency array messages to trigger the effect on messages update
 
    const onSubmit = async ({ prompt }: FormData) => {
-      setMessages((prev) => [...prev, { content: prompt, role: 'user' }]); // Add user's message to state
-      setIsBotTyping(true); // Set bot typing state to true
-      reset(); // Clear the textarea after submission
-      const { data } = await axios.post<chatResponse>('/api/chat', {
-         // Send POST request to the server
-         prompt: prompt, // User's input prompt
-         conversationId: conversationId.current, // Current conversation ID
-      });
-      setMessages((prev) => [
-         ...prev,
-         { content: data.message, role: 'assistant' },
-      ]);
-      setIsBotTyping(false); // Set bot typing state to false
-      console.log(data); // Log the response from the server
+      try {
+         setMessages((prev) => [...prev, { content: prompt, role: 'user' }]); // Add user's message to state
+         setIsBotTyping(true); // Set bot typing state to true
+         setError(''); // Clear any previous errors
+         reset(); // Clear the textarea after submission
+         const { data } = await axios.post<chatResponse>('/api/chat', {
+            // Send POST request to the server
+            prompt: prompt, // User's input prompt
+            conversationId: conversationId.current, // Current conversation ID
+         });
+         setMessages((prev) => [
+            ...prev,
+            { content: data.message, role: 'assistant' },
+         ]);
+         console.log(data); // Log the response from the server
+      } catch (error) {
+         console.error(error);
+         setError(
+            'An error occurred while fetching the response. Please try again.'
+         );
+      } finally {
+         setIsBotTyping(false); // Set bot typing state to false
+      }
    };
 
    const onKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
@@ -62,8 +72,8 @@ const Chatbox = () => {
    };
 
    return (
-      <div>
-         <div className="flex flex-col gap-3 mb-5">
+      <div className="flex flex-col h-dvh">
+         <div className="flex flex-col flex-1 min-h-0 gap-3 mb-5">
             {messages.map((messages, index) => (
                <p
                   key={index} // Use index as key since messages can be identical
@@ -87,6 +97,7 @@ const Chatbox = () => {
                   <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.4s]"></div>
                </div>
             )}
+            {error && <p className="text-red-700">{error}</p>}
          </div>
 
          <form
