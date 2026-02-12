@@ -2,12 +2,10 @@ import React from 'react';
 
 const TypingIndicator = () => {
    return (
-      <div>
-         <div className="inline-flex gap-1 px-3 py-3 bg-gray-400 rounded-xl">
-            <Dot />
-            <Dot className="[animation-delay:0.2s]" />
-            <Dot className="[animation-delay:0.4s]" />
-         </div>
+      <div className="flex gap-1 px-3 py-3 bg-gray-100 rounded-lg self-start w-fit">
+         <Dot />
+         <Dot className="[animation-delay:0.2s]" />
+         <Dot className="[animation-delay:0.4s]" />
       </div>
    );
 };
